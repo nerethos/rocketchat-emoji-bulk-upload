@@ -12,7 +12,7 @@ Features
     
 *   Uses the Rocket.Chat API for easy and secure integration
     
-    This script interacts with your Rocket.Chat server using the official API, ensuring a secure and straightforward integration process. You will need to provide your admin username and password to authenticate with the API.
+    This script interacts with your Rocket.Chat server using the official API, ensuring a secure and straightforward integration process. You can authenticate with an admin username and password, or with a Personal Access Token.
     
 *   Command-line interface for user input
     
@@ -80,6 +80,15 @@ Usage
     Replace the placeholder values with your actual Rocket.Chat server URL, admin username, and password. The script will use these values if they are set in the `.env` file, otherwise, it will prompt the user to input them.
 
     **Note**: There is a `.env.example` file included in this repository that you can use as a template. Simply rename it to `.env` and fill in your information.
+
+    **Personal Access Token authentication**: Instead of a username and password, you can authenticate with a Rocket.Chat Personal Access Token by setting `ROCKETCHAT_AUTH_TOKEN` and `ROCKETCHAT_USER_ID` in your `.env` file. Both must be set together, or the script will exit with an error. When set, these take priority and the username/password prompts are skipped entirely.
+
+    ```ini
+    ROCKETCHAT_AUTH_TOKEN=your-personal-access-token
+    ROCKETCHAT_USER_ID=your-user-id
+    ```
+
+    Generate a token from **My Account > Personal Access Tokens** in Rocket.Chat; your user ID can be found via **Admin > Users** or the `/api/v1/me` endpoint.
 
     
 2.  Run the script:
