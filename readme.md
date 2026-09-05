@@ -116,6 +116,7 @@ The script will then fetch the emoji source and start downloading and uploading 
 
 Emoji Packs
 ------------
+*   [twitch](packs/twitch.yaml) — regenerated from Twitch's official Helix API (`GET /helix/chat/emotes/global`), current as of this writing. The [lambtron/emojipacks](https://github.com/lambtron/emojipacks) copy below is stale (its `pogchamp` entry, among others, 404s — Twitch's real global emote set has moved on since that repo was last updated) and is left in the list for the other packs it hosts. Since the script needs an actual URL rather than a repo-relative path, use this file's "Raw" link from GitHub as the emoji source when prompted.
 *   [animals](https://raw.githubusercontent.com/lambtron/emojipacks/master/packs/animals.yaml)
 *   [clippy](https://raw.githubusercontent.com/lambtron/emojipacks/master/packs/clippy.yaml)
 *   [fika](https://raw.githubusercontent.com/lambtron/emojipacks/master/packs/fika.yaml)
