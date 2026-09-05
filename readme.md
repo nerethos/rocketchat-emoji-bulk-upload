@@ -10,9 +10,17 @@ Features
     
     The script allows you to easily import custom emojis from a remote YAML file by providing the file's URL. The YAML file should contain the emoji names and image sources in a well-structured format.
     
+*   Import BetterTTV emotes
+    
+    Instead of a YAML pack, you can import emotes directly from the BetterTTV API in one of three ways:
+    
+    *   `betterttv` (or `betterttv:global`) — all current [global emotes](https://betterttv.com/emotes/global) (a small, fixed, curated set).
+    *   `betterttv:popular` — a hand-picked list of well-known shared/channel emotes that aren't part of the global set (e.g. `catJAM`, `PagMan`, `monkaW`). BetterTTV's public API has no popularity ranking and no bulk "all shared emotes" endpoint, and the same emote code can be uploaded independently by many different users, so this picks the first exact-code match returned by BetterTTV's search — a valid upload of that emote, not necessarily "the" canonical one. Edit `BETTERTTV_POPULAR_SHARED_EMOTE_CODES` in `import-custom-emojis.js` to change the list.
+    *   `betterttv:channel:<twitch-channel-id>` — every emote (channel + shared) added to a specific Twitch channel's BetterTTV set. This requires the channel's **numeric** Twitch user ID, not their username — BetterTTV's API doesn't resolve usernames. You can look this up with Twitch's own API, or with a third-party tool such as [ivr.fi](https://api.ivr.fi/v2/twitch/user?login=USERNAME) (unaffiliated with this project — use at your own discretion).
+    
 *   Uses the Rocket.Chat API for easy and secure integration
     
-    This script interacts with your Rocket.Chat server using the official API, ensuring a secure and straightforward integration process. You will need to provide your admin username and password to authenticate with the API.
+    This script interacts with your Rocket.Chat server using the official API, ensuring a secure and straightforward integration process. You can authenticate with an admin username and password, or with a Personal Access Token.
     
 *   Command-line interface for user input
     
@@ -81,6 +89,15 @@ Usage
 
     **Note**: There is a `.env.example` file included in this repository that you can use as a template. Simply rename it to `.env` and fill in your information.
 
+    **Personal Access Token authentication**: Instead of a username and password, you can authenticate with a Rocket.Chat Personal Access Token by setting `ROCKETCHAT_AUTH_TOKEN` and `ROCKETCHAT_USER_ID` in your `.env` file. Both must be set together, or the script will exit with an error. When set, these take priority and the username/password prompts are skipped entirely.
+
+    ```ini
+    ROCKETCHAT_AUTH_TOKEN=your-personal-access-token
+    ROCKETCHAT_USER_ID=your-user-id
+    ```
+
+    Generate a token from **My Account > Personal Access Tokens** in Rocket.Chat; your user ID can be found via **Admin > Users** or the `/api/v1/me` endpoint.
+
     
 2.  Run the script:
     
@@ -88,12 +105,14 @@ Usage
     
 3.  If you haven't provided the necessary information in the `.env` file, follow the prompts and provide the required information:
     
-    *   URL for the YAML file containing the custom emojis
+    *   Emoji source: a YAML pack URL, or one of `betterttv`, `betterttv:popular`, `betterttv:channel:<twitch-channel-id>` (see [Import BetterTTV emotes](#features) above)
     *   Rocket.Chat server URL
     *   Rocket.Chat admin username
     *   Rocket.Chat admin password
 
-The script will then fetch the YAML file, parse it, and start downloading and uploading the custom emojis to your Rocket.Chat instance. The process may take some time, depending on the number of custom emojis and their file sizes. After all emojis are uploaded, the script will display a success message.
+The script will then fetch the emoji source and start downloading and uploading the custom emojis to your Rocket.Chat instance. The process may take some time, depending on the number of custom emojis and their file sizes. After all emojis are uploaded, the script will display a success message — unless one or more emojis were skipped or failed, in which case that count won't be printed (each success/skip/failure is still logged individually).
+
+**Note on BetterTTV emote names**: A handful of BetterTTV global emote codes contain characters Rocket.Chat won't accept in an emoji name (e.g. `:tf:`, `M&Mjc`, `D:`). These will fail to upload with an error printed to the console; every other emote is unaffected and continues uploading normally.
 
 Emoji Packs
 ------------
