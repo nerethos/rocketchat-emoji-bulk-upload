@@ -56,7 +56,10 @@ function promptForValue(message, currentValue, callback) {
 }
 
 function inferExtension(url) {
-  return url.split("/").pop().split(".").pop();
+  const candidate = url.split("/").pop().split(".").pop();
+  // Some CDNs (e.g. Twitch's emoticon URLs) end in a version/scale number like ".../1.0"
+  // rather than a real file extension - don't mistake that trailing "0" for one.
+  return /^\d+$/.test(candidate) ? undefined : candidate;
 }
 
 function fetchExistingEmojis(serverUrl, authToken, userId, callback) {
@@ -92,10 +95,20 @@ function fetchYamlEmojis(emojiYamlUrl, callback) {
     const emojis = emojiYaml["emojis"].map((emoji) => ({
       name: emoji.name,
       src: emoji.src,
-      ext: inferExtension(emoji.src),
+      // Prefer an explicit "ext" field for packs whose image URLs have no real extension
+      // (e.g. Twitch's CDN, which ends in a version/scale number instead).
+      ext: emoji.ext || inferExtension(emoji.src),
     }));
 
-    callback(emojis);
+    const unresolvedExt = emojis.filter((emoji) => !emoji.ext);
+    if (unresolvedExt.length > 0) {
+      console.error(
+        `Could not determine a file extension for ${unresolvedExt.length} emoji(s) (e.g. "${unresolvedExt[0].name}") ` +
+          `whose image URL has no real extension - add an explicit "ext" field for these entries in the YAML pack. Skipping them.`
+      );
+    }
+
+    callback(emojis.filter((emoji) => emoji.ext));
   });
 }
 
