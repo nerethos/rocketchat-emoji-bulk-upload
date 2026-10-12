@@ -9,9 +9,9 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-const rocketchatServerUrl = process.env.ROCKETCHAT_SERVER_URL || "";
-const adminUsername = process.env.ADMIN_USERNAME || "";
-const adminPassword = process.env.ADMIN_PASSWORD || "";
+let rocketchatServerUrl = process.env.ROCKETCHAT_SERVER_URL || "";
+let adminUsername = process.env.ADMIN_USERNAME || "";
+let adminPassword = process.env.ADMIN_PASSWORD || "";
 const rocketchatAuthToken = process.env.ROCKETCHAT_AUTH_TOKEN || "";
 const rocketchatUserId = process.env.ROCKETCHAT_USER_ID || "";
 
@@ -121,7 +121,13 @@ function importEmojis(authToken, userId, emojiYamlUrl) {
 
               uploadedEmojisCount++;
 
-              if (uploadedEmojisCount === emojis.length) {
+              const totalToUpload = emojis.filter((e) => {
+                const fileName = e.src.split("/").pop() || "";
+                const [existingName] = fileName.split(".");
+                return existingName && !existingEmojiNames.includes(existingName);
+              }).length;
+
+              if (uploadedEmojisCount === totalToUpload) {
                 console.log(`Successfully added ${uploadedEmojisCount} new emojis`);
               }
             }
